@@ -16,21 +16,18 @@ public class JogoDaVelha {
 			System.out.println("Rodada " + rodada);
 			System.out.println("Jogador: " + jogador);
 			System.out.println();
-			System.out.print("linha: ");
-			int linha = sc.nextInt();
-			System.out.print("coluna: ");
-			int coluna = sc.nextInt();
-			jogador = (jogador == 1) ? 2: 1;
-			if (jogador == 2) {
-				tabuleiro[linha][coluna] = "x";	
-			}
-			else {
-				tabuleiro[linha][coluna] = "o";
-			}
-			System.out.println();
 			printBoard(tabuleiro);
 			System.out.println();
+			System.out.print("coluna e linha: ");
+			String s = convertendoPosicao(sc);
+			int linha = Integer.parseInt(s.substring(0, 1));
+			int coluna = Integer.parseInt(s.substring(1));
+			jogador = (jogador == 1) ? 2: 1;
+			marcandoTabuleiro(jogador, linha, coluna, tabuleiro);
+			System.out.println();
 			if (testVitoria(tabuleiro, jogador)) {
+				printBoard(tabuleiro);
+				System.out.println();
 				vitoria = true;
 				int jogadorR = (jogador == 2) ? 1: 2;
 				System.out.println("-----O JOGADOR "+ jogadorR +" GANHOU-----");
@@ -42,6 +39,7 @@ public class JogoDaVelha {
 	
 	public static void printBoard(String[][] mat) {
 		for (int i=0; i<mat.length; i++) {
+			System.out.print((3 - i) + " ");
 			for (int j=0; j<mat.length; j++) {
 				if (mat[i][j] == null) {
 					mat[i][j] = "-";
@@ -53,10 +51,29 @@ public class JogoDaVelha {
 			}
 			System.out.println();
 		}
+		System.out.println("  a   b   c");
+	}
+	
+	public static void marcandoTabuleiro(int jogador, int linha, int coluna, String[][] tabuleiro) {
+		if (jogador == 2) {
+			tabuleiro[linha][coluna] = "X";	
+		}
+		else {
+			tabuleiro[linha][coluna] = "O";
+		}
+	}
+	
+	public static String convertendoPosicao(Scanner sc) {
+		String s = sc.next();
+		char column = s.charAt(0);
+		int row = Integer.parseInt(s.substring(1));
+		String linha = String.valueOf(3 - row);
+		String coluna = String.valueOf(column - 'a');
+		return linha + coluna;
 	}
 	
 	public static boolean testVitoria(String[][] tabuleiro, int jogador) {
-		String aux = (jogador == 2) ? "x" : "o";
+		String aux = (jogador == 2) ? "X" : "O";
 		for (int i=0; i<tabuleiro.length; i++) {
 			if ((tabuleiro[i][0] == aux) && (tabuleiro[i][1] == aux) && (tabuleiro[i][2] == aux)) {
 				return true;	
