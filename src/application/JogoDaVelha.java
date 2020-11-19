@@ -1,6 +1,8 @@
-package jogoDaVelha;
+package application;
 
 import java.util.Scanner;
+
+import model.exceptions.GameExceptions;
 
 public class JogoDaVelha {
 	
@@ -13,26 +15,40 @@ public class JogoDaVelha {
 		
 		System.out.println("-----JOGO INICIADO-----");
 		while (rodada < 10 && !vitoria) {
-			System.out.println("Rodada " + rodada);
-			System.out.println("Jogador: " + jogador);
-			System.out.println();
-			printBoard(tabuleiro);
-			System.out.println();
-			System.out.print("coluna e linha: ");
-			String s = convertendoPosicao(sc);
-			int linha = Integer.parseInt(s.substring(0, 1));
-			int coluna = Integer.parseInt(s.substring(1));
-			jogador = (jogador == 1) ? 2: 1;
-			marcandoTabuleiro(jogador, linha, coluna, tabuleiro);
-			System.out.println();
-			if (testVitoria(tabuleiro, jogador)) {
+			try {
+				System.out.println("Rodada " + rodada);
+				System.out.println("Jogador: " + jogador);
+				System.out.println();
 				printBoard(tabuleiro);
 				System.out.println();
-				vitoria = true;
-				int jogadorR = (jogador == 2) ? 1: 2;
-				System.out.println("-----O JOGADOR "+ jogadorR +" GANHOU-----");
+				System.out.print("coluna e linha: ");
+				String s = convertePosicao(sc);
+				int linha = Integer.parseInt(s.substring(0, 1));
+				int coluna = Integer.parseInt(s.substring(1));
+				jogador = (jogador == 1) ? 2: 1;
+				marcandoTabuleiro(jogador, linha, coluna, tabuleiro);
+				System.out.println();
+				if (testVitoria(tabuleiro, jogador)) {
+					printBoard(tabuleiro);
+					System.out.println();
+					vitoria = true;
+					int jogadorR = (jogador == 2) ? 1: 2;
+					System.out.println("-----O JOGADOR "+ jogadorR +" GANHOU-----");
+				}else if (rodada == 10) {
+					System.out.println("Velha!");
+				}
+				rodada++;
 			}
-			rodada++;
+			catch (GameExceptions e) {
+				System.out.println();
+				System.out.println(e.getMessage());
+				System.out.println();
+			}
+			catch (NumberFormatException e) {
+				System.out.println();
+				System.out.println("Erro: Digite novamente");
+				System.out.println();
+			}
 		}
 		sc.close();
 	}
@@ -63,9 +79,15 @@ public class JogoDaVelha {
 		}
 	}
 	
-	public static String convertendoPosicao(Scanner sc) {
+	public static String convertePosicao(Scanner sc) {
 		String s = sc.next();
+		if (s.charAt(0) != 'a' && s.charAt(0) != 'b' && s.charAt(0) != 'c') {
+			throw new GameExceptions("Opção de coluna invalida! Digite apenas: 'a', 'b' ou 'c'");
+		}
 		char column = s.charAt(0);
+		if (Integer.parseInt(s.substring(1)) != 1 && Integer.parseInt(s.substring(1)) != 2 && Integer.parseInt(s.substring(1)) != 3) {
+			throw new GameExceptions("Opção de linha invalida! Digite apenas: 1, 2 ou 3");
+		}
 		int row = Integer.parseInt(s.substring(1));
 		String linha = String.valueOf(3 - row);
 		String coluna = String.valueOf(column - 'a');
