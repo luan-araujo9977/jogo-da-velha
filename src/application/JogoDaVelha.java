@@ -8,7 +8,7 @@ public class JogoDaVelha {
 	
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		String[][] tabuleiro = new String[3][3];
+		int[][] tabuleiro = new int[3][3];
 		
 		int rodada = 1, jogador = 1;
 		boolean vitoria = false;
@@ -16,12 +16,10 @@ public class JogoDaVelha {
 		System.out.println("-----JOGO INICIADO-----");
 		while (rodada < 10 && !vitoria) {
 			try {
-				System.out.println("Rodada " + rodada);
-				System.out.println("Jogador: " + jogador);
+				System.out.println("Rodada: " + rodada + "   Jogador: " + jogador);
 				System.out.println();
 				printBoard(tabuleiro);
-				System.out.println();
-				System.out.print("coluna e linha: ");
+				System.out.print("Digite a coluna e linha: ");
 				String s = convertePosicao(sc);
 				int linha = Integer.parseInt(s.substring(0, 1));
 				int coluna = Integer.parseInt(s.substring(1));
@@ -30,14 +28,14 @@ public class JogoDaVelha {
 				System.out.println();
 				if (testVitoria(tabuleiro, jogador)) {
 					printBoard(tabuleiro);
-					System.out.println();
 					vitoria = true;
 					int jogadorR = (jogador == 2) ? 1: 2;
 					System.out.println("-----O JOGADOR "+ jogadorR +" GANHOU-----");
-				}else if (rodada == 10) {
-					System.out.println("Velha!");
 				}
 				rodada++;
+				if (rodada == 10 && !vitoria) {
+					System.out.println("Empate!");
+				}
 			}
 			catch (GameExceptions e) {
 				System.out.println();
@@ -53,14 +51,20 @@ public class JogoDaVelha {
 		sc.close();
 	}
 	
-	public static void printBoard(String[][] mat) {
+	public static void printBoard(int[][] mat) {
+		
 		for (int i=0; i<mat.length; i++) {
 			System.out.print((3 - i) + " ");
 			for (int j=0; j<mat.length; j++) {
-				if (mat[i][j] == null) {
-					mat[i][j] = "-";
+				if (mat[i][j] == 0) {
+					System.out.print("-");;
 				}
-				System.out.print(mat[i][j]);
+				if (mat[i][j] == 1) {
+					System.out.print("O");;
+				}
+				if (mat[i][j] == 2) {
+					System.out.print("X");;
+				}
 				if (j<2) {
 					System.out.print(" | ");
 				}
@@ -68,14 +72,18 @@ public class JogoDaVelha {
 			System.out.println();
 		}
 		System.out.println("  a   b   c");
+		System.out.println();
 	}
 	
-	public static void marcandoTabuleiro(int jogador, int linha, int coluna, String[][] tabuleiro) {
+	public static void marcandoTabuleiro(int jogador, int linha, int coluna, int[][] mat) {
+		if (mat[linha][coluna] != 0) {
+			throw new GameExceptions("Erro! Escolha uma posição vazia");
+		}
 		if (jogador == 2) {
-			tabuleiro[linha][coluna] = "X";	
+			mat[linha][coluna] = 2;	
 		}
 		else {
-			tabuleiro[linha][coluna] = "O";
+			mat[linha][coluna] = 1;
 		}
 	}
 	
@@ -94,8 +102,8 @@ public class JogoDaVelha {
 		return linha + coluna;
 	}
 	
-	public static boolean testVitoria(String[][] tabuleiro, int jogador) {
-		String aux = (jogador == 2) ? "X" : "O";
+	public static boolean testVitoria(int[][] tabuleiro, int jogador) {
+		int aux = (jogador == 2) ? 2 : 1;
 		for (int i=0; i<tabuleiro.length; i++) {
 			if ((tabuleiro[i][0] == aux) && (tabuleiro[i][1] == aux) && (tabuleiro[i][2] == aux)) {
 				return true;	
